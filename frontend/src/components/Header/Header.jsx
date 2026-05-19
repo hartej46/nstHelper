@@ -6,7 +6,7 @@ function Header() {
 
     const authStatus = useSelector(state => state.auth.status)
 
-    if (authStatus) {
+    if (!authStatus) {
         return (
         <section className=' w-full flex justify-between pr-4 pl-4 pt-2 pb-2  border-b border-b-black rounded-lg'>
             <p>Aagaya!!!!! Phele login toh kar le....</p>
