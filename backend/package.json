@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "This is backend server for nstHelper",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hartej",
+    "nst",
+    "nstHelper"
+  ],
+  "author": "Hartejsingh Sandhu",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.2",
+    "nodemailer": "^8.0.8"
+  }
+}
