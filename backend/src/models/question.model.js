@@ -10,9 +10,14 @@ const questionSchema = new Schema(
             type : String,
             required : true,
         },
+        subject: {
+            type: String,
+            required: true
+        },
         urlId : {
             type : String,
             required: true,
+            lowercase: true
         },
         code : {
             type : String,
