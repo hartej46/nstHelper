@@ -28,7 +28,7 @@ export const verifyAccessToken = asyncHandler (async (req, res,next) => {
                 if (!user)  return res.status(400).json({message: "Unauthorized access"});
                 
                 // creating accessToken with refreshToken so that the 20d period resets again to 20d
-                const {accessToken, refreshToken} = creatRefreshAccessToken(user._id); 
+                const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id); 
     
                 req.user = user;
                 //set the cookie with fresh token
@@ -38,9 +38,17 @@ export const verifyAccessToken = asyncHandler (async (req, res,next) => {
                 return res.status(401).json({ message: "Refresh token invalid. Please login again." });
             }
         }
-        res.status(401).json({message: error.name})
+      return res.status(401).json({ 
+            success: false,
+            message: error.message || "Unauthorized access. Invalid or missing token." 
+        });
     }
 })
 
 
-
+export const adminOnly = asyncHandler ( async (req, res, next) => {
+    if (req.user.role === "admin" && req.user.email === process.env.ADMIN_EMAIL) return next();
+    
+    return res.status(403).json({message: "Forbbiden access, please use authorized email"})
+    
+})
