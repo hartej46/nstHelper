@@ -126,6 +126,7 @@ export const emailSend = async (to, otpCode ) => {
         return info;
         
     } catch (error) {
-        return error
+        throw new Error("Email failed to send")
+        return null
     }
 }
