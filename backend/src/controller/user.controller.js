@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { emailSend } from "../utlis/emailService";
 import { options } from "../constants";
 
+
 const creatRefreshAccessToken = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -18,6 +19,17 @@ const creatRefreshAccessToken = async (userId) => {
     } catch (error) {
         throw new Error(error)
     }
+}
+
+const changePassword = async (_id, password) => {
+    const user = await User.findById(_id);
+
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    if (!isPasswordCorrect) return res.status(400).json({message: "Please enter correct password"});
+
+    user.password = password;
+    await user.save()
+    return true
 }
 
 const sendEmail = async (to, otpCode) => {
@@ -115,7 +127,7 @@ const registerUser = asyncHandler(async (req, res) => {
        role = "admin"
     };
 
-    otpExpiry = new Date(Date.now() + (5 * 60 * 1000)); 
+    const otpExpiry = new Date(Date.now() + (5 * 60 * 1000)); 
 
     const user = await User.create({
         username,
@@ -150,8 +162,88 @@ const registerUser = asyncHandler(async (req, res) => {
 
 })
 
+const loginUser = asyncHandler(async (req, res) => {
+    const email = req.body.email.trim().toLowerCase();
+    const password = req.body.password.trim().toLowerCase();
+
+    if (!email || !password) return res.status(400).json({message: "Please give me correct details"});
+    const user = await User.findOne({email});
+    if (!user) return res.status(404).json({message: "No user found"});
+
+    const isPasswordCorrect = await User.isPasswordCorrect(password);
+    if (!isPasswordCorrect) return res.status(403).status({message: "Icorrect password"});
+
+    const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id);
+    return  res.cookie("accessToken", accessToken, options)
+               .cookie("refreshToken", refreshToken, options)
+               .status(200)
+               .json({messgae: "User found correctly"})
+})
+
+const logoutUser = asyncHandler(async (req, res) => {
+    // we get id from req coz we checked in middleware
+    await User.findOneAndUpdate(
+        {_id: req.user._id},
+        {
+            $unset:{
+                refreshToken: 46
+            }
+        }
+    )
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json({message:"User logged out successfully"});
+})
+
+const forgotPassword = asyncHandler(async(req, res) => {
+    const {email} = req.body;
+    if (!email) return res.status(400).json({message:"User not found"});
+
+    const user = await User.findOne({email});
+    if (!user) return res.status(400).json({message:"User not found"});
+
+    const otpExpiry = new Date(Date.now() + (5 * 60 * 1000)); 
+    const otpCode = Math.floor(Math.random() * (999999-100000 + 1)) + 100000;
+    user.otpExpiry = otpExpiry;
+    user.tempOtp = otpCode;
+    await user.save()
+    const isEmailSent = await sendEmail(user.email, otpCode);
+
+    if (!isEmailSent) return res.status(500).json({message:"Couldnt send OTP"});
+
+    return res.json(200).json({message:"OTP sent successfully"});
+    
+})
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const {oldPassword, newPassword} = req.body;
+    const accessToken = req.cookies("accessToken");
+
+    if (!oldPassword || !newPassword) return res.status(400).json({message:"Give proper input"});
+
+    const decodeToken = jwt.decode(accessToken , process.env.ACCESS_TOKEN_GENERATOR);
+    const user = await User.findById(decodeToken._id);
+    if (!user) return res.status(404).json({message:"No user found"});
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+    if (!isPasswordCorrect) return res.status(401).json({message:"Incorrect Password"});
+
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({message:"Password changed successfully"});
+
+})
+
 export {
     verifyOtp,
     registerUser,
-    creatRefreshAccessToken
+    creatRefreshAccessToken,
+    forgotPassword,
+    logoutUser,
+    loginUser,
+    resetPassword
 }
