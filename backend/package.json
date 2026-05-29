@@ -5,6 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon --experimental-specifier-resolution=node -r dotenv/config src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,8 +21,12 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "mongodb": "^7.2.0",
     "mongoose": "^9.6.2",
     "nodemailer": "^8.0.9"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
