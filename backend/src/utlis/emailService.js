@@ -11,17 +11,13 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-
-mailText = ""
-
-
 export const emailSend = async (to, otpCode ) => {
     try {
         const mailOption = {
             from: "hartezz46@gmail.com",
             to: to,
             subject: "Your OTP for nstHelper",
-            text: `
+            html: `
                 <!DOCTYPE html>
                 <html>
                 <head>
