@@ -1,9 +1,9 @@
-import { User } from "../models/user.model";
-import { asyncHandler } from "../utlis/asyncHandler";
+import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utlis/asyncHandler.js";
 import mongoose from 'mongoose';
 import jwt from "jsonwebtoken";
-import { emailSend } from "../utlis/emailService";
-import { options } from "../constants";
+import { emailSend } from "../utlis/emailService.js";
+import { options } from "../constants.js";
 
 
 const creatRefreshAccessToken = async (userId) => {
@@ -55,7 +55,7 @@ const verifyOtp = asyncHandler ( async (req, res) => {
 
     if (!user) return res.status(400).json({message: "No user found"});
     
-    if (otpCode.toString().trim() === user.tempOtp.toString() && new Date(Date.now()) < user.otpExpiry) {
+    if (otpCode.toString().trim() === user.tempOtp?.toString() && new Date(Date.now()) < user.otpExpiry) {
         user.isVerified = true;
         const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id);
         user.refreshToken = refreshToken;
@@ -83,7 +83,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const otpCode = Math.floor(Math.random() * (999999-100000 + 1)) + 100000;
 
     if (
-        [fullName, email, username, password].some((field) => field?.trim() === "")
+        [email, username, password].some((field) => field?.trim() === "")
     ) {
         throw new ApiError(400, "All fields are required")
     }
@@ -97,8 +97,14 @@ const registerUser = asyncHandler(async (req, res) => {
             return res.status(400).json({ message: "Email is already registered. Please log in." });
         }
 
+        if(existedUser.otpCount > 5 && existedUser.otpWindow >= Date.now()) return res.status(401).json({messgae:"Too many otp attempt"});
+
+        if(existedUser.otpWindow < Date.now()) {
+            existedUser.otpCount = 0;
+            existedUser.otpWindow = Date.now() + (24*60*60*1000);
+        }
         
-        existedUser.otpExpiry = new Date(Date.now() + (5 * 60 * 1000)); 
+        existedUser.otpExpiry = new Date(Date.now() + (10 * 60 * 1000)); 
         existedUser.username = username;
         existedUser.email = email;
         existedUser.password = password;
@@ -114,6 +120,10 @@ const registerUser = asyncHandler(async (req, res) => {
                 message: "Failed to send OTP email. Please try again later." 
             });
         }
+        existedUser.otpCount++ ;
+        await existedUser.save();
+
+
         return res.status(200).json({ 
             success: true, 
             message: "OTP sent successfully! Please check your inbox." 
@@ -134,7 +144,7 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         role,
         password,
-        tempOtp,
+        otpCode,
         otpExpiry,
         
     });
@@ -163,21 +173,21 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-    const email = req.body.email.trim().toLowerCase();
-    const password = req.body.password.trim().toLowerCase();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password?.trim().toLowerCase();
 
     if (!email || !password) return res.status(400).json({message: "Please give me correct details"});
     const user = await User.findOne({email});
     if (!user) return res.status(404).json({message: "No user found"});
 
-    const isPasswordCorrect = await User.isPasswordCorrect(password);
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) return res.status(403).status({message: "Icorrect password"});
 
     const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id);
     return  res.cookie("accessToken", accessToken, options)
                .cookie("refreshToken", refreshToken, options)
                .status(200)
-               .json({messgae: "User found correctly"})
+               .json({messgae: "User Logged In."})
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -214,7 +224,7 @@ const forgotPassword = asyncHandler(async(req, res) => {
 
     if (!isEmailSent) return res.status(500).json({message:"Couldnt send OTP"});
 
-    return res.json(200).json({message:"OTP sent successfully"});
+    return res.status(200).json({message:"OTP sent successfully"});
     
 })
 
@@ -238,6 +248,33 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 })
 
+const resendOtp = asyncHandler(async(req, res) => {
+    const {email} = req.body;
+    if (!email) return res.status(401).json({message: "Please give proper email"});
+
+    const user = await User.findOne({email});
+    if (!user) return res.status(404).json({message: "No user found"});
+
+    if (user.otpCount > 5 && user.otpWindow > Date.now()) return res.status(401).json({message:"cannot send OTP, crossed limit"});
+
+    if(user.otpWindow < Date.now()) {
+        user.otpCount = 0;
+        user.otpWindow = Date.now() + (24*60*60*1000);
+    }
+
+    const otpCode = Math.floor(Math.random() * (999999-100000 + 1)) + 100000;
+    const otpExpiry = new Date(Date.now() + (5 * 60 * 1000)); 
+    user.tempOtp = otpCode;
+    user.otpExpiry = otpExpiry;
+    await user.save();
+    const isEmailSent = sendEmail(user.email, otpCode);
+
+    if (!isEmailSent) return res.status(500).json({message:"Something went wrong internally"});
+    user.otpCount++;
+    await user.save();
+    return res.json({message:"OTP sent successfully"})
+})
+
 export {
     verifyOtp,
     registerUser,
@@ -245,5 +282,6 @@ export {
     forgotPassword,
     logoutUser,
     loginUser,
-    resetPassword
+    resetPassword,
+    resendOtp
 }
