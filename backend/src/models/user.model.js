@@ -38,6 +38,14 @@ const UserSchema = new Schema(
         otpExpiry: {
             type: Date 
         },
+        otpCount: {
+            type: Number,
+            default: 0
+        },
+        otpWindow: {
+            type:Date,
+            default: Date.now() + (24*60*60*1000)
+        },
         refreshToken: {
             type: String
         }
@@ -47,17 +55,6 @@ const UserSchema = new Schema(
     }
 )
 
-// UserSchema.pre("save", async function (next) {
-//     if (!this.isModified("password")) return next();
-
-//    try {
-//         const salt = await bcrypt.genSalt(10);
-//         this.password = await bcrypt.hash(this.password, salt);
-//         next();
-//    } catch (error) {
-//         next(error);
-//    }
-// })
 
 UserSchema.pre("save", async function () {
     if (!this.isModified("password")) return;
@@ -90,7 +87,6 @@ UserSchema.methods.generateAccessToken = function () {
     )
 }
 
-
 UserSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {  
@@ -105,6 +101,5 @@ UserSchema.methods.generateRefreshToken = function () {
         }
     )
 }
-
 
 export const User = mongoose.model("User", UserSchema);
