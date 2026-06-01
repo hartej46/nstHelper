@@ -275,6 +275,15 @@ const resendOtp = asyncHandler(async(req, res) => {
     return res.json({message:"OTP sent successfully"})
 })
 
+const userData = asyncHandler( async (req, res) => {
+    return res.status(200).json({
+        success: true,
+        message: "User is logged in",
+        data: req.user
+    });
+    
+})
+
 export {
     verifyOtp,
     registerUser,
@@ -283,5 +292,6 @@ export {
     logoutUser,
     loginUser,
     resetPassword,
-    resendOtp
+    resendOtp,
+    userData
 }
