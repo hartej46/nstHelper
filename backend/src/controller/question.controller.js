@@ -50,10 +50,10 @@ const cursorPagation = asyncHandler(async (req, res) => {
 })
 
 const getQuestion = asyncHandler(async (req, res) => {
-    const searchWord = req.query.q;
-    const subject = req.query.subject ;
+    const {searchWord} = req.params;
+    // const subject = req.query.subject ;
 
-    if (!searchWord || searchWord.trim() === "" || !subject || subject.trim() === "") {
+    if (!searchWord || searchWord.trim() === "" ) {
         return res.status(200).json({
             success: true,
             data: []
@@ -61,8 +61,7 @@ const getQuestion = asyncHandler(async (req, res) => {
     }
 
     const matchingQuestions = await Question.find({
-        title: { $regex: searchWord, $options: 'i' },
-        subject: subject
+        title: { $regex: searchWord, $options: 'i' }
     }).sort({createdAt: -1}).limit(20);
     
     return  res.status(200).json({

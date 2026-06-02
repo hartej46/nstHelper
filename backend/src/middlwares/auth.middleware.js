@@ -1,8 +1,8 @@
-import { options } from "../constants";
-import { User } from "../models/user.model";
-import { asyncHandler } from "../utlis/asyncHandler";
+import { options } from "../constants.js";
+import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utlis/asyncHandler.js";
 import jwt from "jsonwebtoken";
-import { creatRefreshAccessToken } from "../controller/user.controller";
+import { creatRefreshAccessToken } from "../controller/user.controller.js";
 
 export const verifyAccessToken = asyncHandler (async (req, res,next) => {
     try {
@@ -45,10 +45,51 @@ export const verifyAccessToken = asyncHandler (async (req, res,next) => {
     }
 })
 
-
 export const adminOnly = asyncHandler ( async (req, res, next) => {
     if (req.user.role === "admin" && req.user.email === process.env.ADMIN_EMAIL) return next();
     
     return res.status(403).json({message: "Forbbiden access, please use authorized email"})
     
 })
+
+export const redirectIfLoggedIn = asyncHandler(async (req, res, next) => {
+    const token = req.cookies.accessToken;
+    const rToken = req.cookies.refreshToken;
+    // console.log(token)
+    if (!token && !rToken) {
+        return next();
+    }
+
+    try {
+        if (token) {
+            jwt.verify(token, process.env.ACCESS_TOKEN_GENERATOR);
+            return res.status(200).json({
+                success: true,
+                isLoggedIn: true,
+                redirectTo: "/dashboard",
+                message: "User already logged in. Redirecting..."
+            });
+        }
+    } catch (error) {
+        if (error.name === "TokenExpiredError" && rToken) {
+            try {
+                const decodedRefreshToken = jwt.verify(rToken, process.env.REFRESH_TOKEN_GENERATOR);
+                const user = await User.findById(decodedRefreshToken._id);
+
+                const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id); 
+                return res.status(200)
+                .cookie("accessToken", accessToken, options)
+                .cookie("refreshToken", refreshToken, options)
+                .json({
+                    success: true,
+                    isLoggedIn: true,
+                    redirectTo: "/dashboard",
+                    message: "Session still active. Redirecting..."
+                });
+            } catch (refreshError) {
+                return next();
+            }
+        }
+    }
+    return next();
+});

@@ -1,6 +1,6 @@
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utlis/asyncHandler.js";
-import mongoose from 'mongoose';
+
 import jwt from "jsonwebtoken";
 import { emailSend } from "../utlis/emailService.js";
 import { options } from "../constants.js";
