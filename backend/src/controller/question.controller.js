@@ -49,9 +49,8 @@ const cursorPagation = asyncHandler(async (req, res) => {
         });
 })
 
-const getQuestion = asyncHandler(async (req, res) => {
+const getQuestions = asyncHandler(async (req, res) => {
     const {searchWord} = req.params;
-    // const subject = req.query.subject ;
 
     if (!searchWord || searchWord.trim() === "" ) {
         return res.status(200).json({
@@ -79,9 +78,28 @@ const getListOfSubject = asyncHandler(async(req, res) => {
     })
 })
 
+const questionDetail = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!id || !id.trim()) return res.status(404).json({
+                            success: false,
+                            message:"No question found"
+                        });
+
+    const matchingQuestion = await Question.find({
+        urlId: { $regex: searchWord, $options: 'i' }
+    })
+    
+    return  res.status(200).json({
+                success: true,
+                data: matchingQuestions,    
+            });
+})
+
 export{
     newQuestion,
     cursorPagation,
     getListOfSubject,
-    getQuestion
+    getQuestions,
+    questionDetail
 }
