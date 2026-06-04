@@ -14,6 +14,11 @@ const questionSchema = new Schema(
             type: String,
             required: true
         },
+        language: {
+            type: String,
+            required: true,
+            lowercase: true
+        },
         urlId : {
             type : String,
             required: true,
