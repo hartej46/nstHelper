@@ -48,7 +48,6 @@ const sendEmail = async (to, otpCode) => {
 
 const verifyOtp = asyncHandler(async (req, res) => {
     const { email, otpCode } = req.body;
-    console.log("Incoming Request Body:", email, otpCode); 
 
     if (!email || !otpCode || email.trim() === "" || otpCode.toString().trim() === "") {
         return res.status(400).json({ message: "Give correct input" });
