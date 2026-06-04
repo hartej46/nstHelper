@@ -46,37 +46,42 @@ const sendEmail = async (to, otpCode) => {
     }
 };
 
-const verifyOtp = asyncHandler ( async (req, res) => {
-    const {email, otpCode} = req.body;
+const verifyOtp = asyncHandler(async (req, res) => {
+    const { email, otpCode } = req.body;
+    console.log("Incoming Request Body:", email, otpCode); 
 
-    if ([email, otpCode].some(val => val.trim() === "")) return res.status(400).json({message: "Give coreect input"});
+    if (!email || !otpCode || email.trim() === "" || otpCode.toString().trim() === "") {
+        return res.status(400).json({ message: "Give correct input" });
+    }
 
-    const user = await User.findOne({email: email})
+    const user = await User.findOne({ email: email });
 
-    if (!user) return res.status(400).json({message: "No user found"});
+    if (!user) {
+        return res.status(400).json({ message: "No user found" });
+    }
     
-    if (otpCode.toString().trim() === user.tempOtp?.toString() && new Date(Date.now()) < user.otpExpiry) {
+    if (otpCode.toString().trim() === user.tempOtp?.toString() && new Date() < user.otpExpiry) {
         user.isVerified = true;
-        const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id);
+        
+        const { accessToken, refreshToken } = await creatRefreshAccessToken(user._id);
         user.refreshToken = refreshToken;
-
         await user.save();
-        return  res.status(200)
+
+        return res.status(200)
                 .cookie("accessToken", accessToken, options)
                 .cookie("refreshToken", refreshToken, options)
                 .json({
-                    message: "User registerd successfully.",
+                    message: "User registered successfully.",
                     accessToken,
                     user: {
                         username: user.username,
                         email: user.email
                     }
-                })
+                });
     }
 
-    return res.status(400).json({message: "The OTP entered is incorrect or has expired. Please try again."});
-    
-} );
+    return res.status(400).json({ message: "The OTP entered is incorrect or has expired. Please try again." });
+});
 
 const registerUser = asyncHandler(async (req, res) => {
     const {username, email, password} = req.body;
