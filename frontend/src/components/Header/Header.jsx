@@ -1,36 +1,59 @@
-import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
-import {LogIn} from 'lucide-react'
+import { useSelector, useDispatch } from 'react-redux';
+import { LogOut, Code2, Bell } from 'lucide-react';
+import { logout } from '../../store/authSlice';
+import { logOut } from '../../service/service';
 
 function Header() {
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.auth);
 
-    const authStatus = useSelector(state => state.auth.status)
+  const handleLogout = async() => {
+    dispatch(logout());
+    await logOut();
+  }
 
-    if (!authStatus) {
-        return (
-        <section className=' w-full flex justify-between pr-4 pl-4 pt-2 pb-2  border-b border-b-black rounded-lg'>
-            <p>Aagaya!!!!! Phele login toh kar le....</p>
-            <Link
-                to='/Login'
-                className=' flex w-6'
-            >
-                <LogIn />
-                Login
-            </Link>
-        </section>
-        )
-    }
+  return (
+    <header className="w-full bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+      <div className="flex items-center space-x-3">
+        <div className="bg-slate-900 p-2 rounded-xl text-white shadow-sm">
+          <Code2 className="w-5 h-5" />
+        </div>
+        <span className="text-lg font-bold tracking-tight text-slate-800">
+          Hartej School of Technology
+        </span>
+      </div>
 
-    return (
-        <section className=' w-full flex justify-between pr-4 pl-4 pt-2 pb-2  border-b border-b-black rounded-lg '>
-            <select name="semester" id="sem" className=' border-0 rounded-lg border-black p-2 w-full'>
-                <option value="NST S1 P-CS+AIML"></option>
-                <option value="NST S2 P-CS+AIML"></option>
-            </select>
-            <p className=' text-xl text-gray-700 '>Welcome to Hartej School of Technolog</p>
-            <div className=' w-4 h-4 bg-black rounded-full'></div>
-        </section>
-    )
-    }
+      <div className="flex items-center space-x-6">
+        <button className="text-gray-400 hover:text-gray-600 transition-colors relative cursor-pointer">
+          <Bell className="w-5 h-5" />
+          <span className="absolute top-0 right-0 w-2 h-2 bg-sky-500 rounded-full"></span>
+        </button>
 
-    export default Header
+        <div className="flex items-center space-x-4 border-l border-gray-100 pl-6">
+          <div className="text-right hidden sm:block">
+            <p className="text-sm font-semibold text-slate-800">
+              {userData?.data?.username || "Developer"}
+            </p>
+            <p className="text-xs text-slate-400 font-medium">
+              {userData?.data?.email}
+            </p>
+          </div>
+          
+          <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white font-bold text-sm shadow-md">
+            {userData?.data?.username?.charAt(0).toUpperCase() || "H"}
+          </div>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 font-semibold rounded-lg transition-colors cursor-pointer"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="hidden md:inline">Log Out</span>
+        </button>
+      </div>
+    </header>
+  );
+}
+
+export default Header;
