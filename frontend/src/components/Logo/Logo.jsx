@@ -1,4 +1,4 @@
-import logo from '../../assets/logo.png'
+import logo from "../../assest/logo.png";
 
 function Logo({size = '36px'}) {
   return (
