@@ -1,29 +1,30 @@
-import {useState,useEffect} from 'react';
-
-function Search() {
+import { useState, useEffect } from 'react';
+function Search({ onDebounce }) {
     const [input, setInput] = useState('');
-    const [value, setValue] = useState('');
 
     useEffect(() => {
         const valueTimer = setTimeout(() => {
-            setValue(input);
-        },1000)
+            if (onDebounce) {
+                onDebounce(input);
+            }
+        }, 1000);
+        return () => clearTimeout(valueTimer);
+    }, [input, onDebounce]);
 
-        return () => clearInterval(valueTimer);
-    },[input]);
-
-    const inputfuction = (e) => {
+    const inputFunction = (e) => {
         setInput(e.target.value);
-    }
+    };
 
-    
     return (
-        <div className=' pt-2 pb-2 pl-2 pr-4 rounded-lg '>
-            <input type="text"  onChange={inputfuction} value={input}/>
+        <div className='pt-2 pb-2 pl-2 pr-4 rounded-lg'>
+            <input 
+                type="text"  
+                onChange={inputFunction} 
+                value={input}
+                className="border p-1 rounded"
+            />
         </div>
-    )
+    );
 }
 
-
-export {value, Search};
-
+export default Search;
