@@ -1,27 +1,19 @@
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 
-let cachedConnection = null;
+let isConnected = false;
 
 const connectDB = async () => {
-    if (cachedConnection) {
-        return cachedConnection;
+    if (isConnected) {
+        return;
     }
 
     try {
-        const connectionURI = `${process.env.MONGODB_URI}/${DB_NAME}`;
-        console.log("Attempting to connect to MongoDB..."); 
-
-        const connectionInstance = await mongoose.connect(connectionURI, {
-            bufferCommands: false,    
-            serverSelectionTimeoutMS: 5000 
-        });
-        
-        cachedConnection = connectionInstance;
+        const connectionInstance = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+        isConnected = !!connectionInstance.connections[0].readyState;
         console.log(`\n MongoDB connected !! DB HOST: ${connectionInstance.connection.host}`);
-        return cachedConnection;
     } catch (error) {
-        console.error("CRITICAL: MONGODB connection FAILED ->", error);
+        console.log("MONGODB connection FAILED ", error);
         throw error; 
     }
 }
