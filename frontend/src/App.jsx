@@ -1,18 +1,47 @@
 import './App.css'
-import Code from './components/Code_section/Code'
+import MainLayout from './Pages/MainLayout';
+import Home from './Pages/Home';
+import {  Routes, Route,BrowserRouter,Navigate } from 'react-router-dom';
+import Playground from './Pages/Playground';
+import  ProtectedRoute from './components/ProtectedRoute';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUser } from './store/authSlice';
+import QuestionPage from './Pages/QuestionPage';
 
 function App() {
-  return (
-    <div className="min-h-screen bg-[#020205] text-zinc-100 flex flex-col items-center justify-center p-4 sm:p-8">
-      <div className="w-full max-w-4xl mx-auto space-y-4">
-        <header className="flex flex-col space-y-1 mb-2">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Code Editor Section</h1>
-          <p className="text-zinc-400 text-sm">Interactive code preview with language switching and copy utility.</p>
-        </header>
-        
-        <Code />
+  const dispatch = useDispatch();
+  const { loading, isLoggedin  } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  },[dispatch])
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-slate-950 text-white font-medium animate-pulse">
+        Verifying secure session...
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {!isLoggedin && <Route path="/" element={<Home />} />}
+
+        <Route element={<ProtectedRoute />}>
+          
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+          <Route path='/question' element={<QuestionPage />}/>
+          <Route path="/playground/code/:id" element={<Playground />} />
+            
+
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
