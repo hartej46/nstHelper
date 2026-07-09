@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import QuestionList from '../components/QuestionList';
+import {QuestionList} from '../components';
 import Search from '../components/searchbar/Search';
 import { getQuestionsApi } from '../service/service';
 
