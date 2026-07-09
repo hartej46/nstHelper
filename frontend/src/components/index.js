@@ -1,5 +1,5 @@
 import Logo from './Logo/Logo'
-import QuestionList from './questionList';
+import QuestionList from './QuestionList';
 import ForgotPasswordForm from './ForgotPasswordForm';
 import LoginIn from "./LogInForm";
 import AuthModel from './AuthModel';
