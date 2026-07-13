@@ -45,8 +45,8 @@ function SideBarHome() {
 
   if (loading) {
     return (
-      <aside className="w-52 shrink-0 bg-white border-r border-gray-200 h-full overflow-y-auto">
-        <div className="p-4">
+      <aside className="w-52 shrink-0 bg-white border-r border-gray-200 h-full overflow-y-auto m-0">
+        <div className="p-4 m-0">
           <div className="h-10 bg-gray-100 rounded-lg animate-pulse mb-6"></div>
           <div className="h-4 w-16 bg-gray-100 rounded animate-pulse mb-3"></div>
           <div className="border border-gray-200 rounded-lg overflow-hidden">
