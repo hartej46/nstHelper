@@ -85,6 +85,12 @@ const LogInForm= ({ onClose,setView }) => {
             > 
                 ForgotPassword
             </button>
+            <button
+                onClick={() => setView('signup')}
+                className="mt-3 w-full py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+                Dont have an account? Sign Up Now
+            </button>
        </div>
     );
 };

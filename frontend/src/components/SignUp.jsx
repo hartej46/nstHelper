@@ -73,6 +73,13 @@ const SignUpForm = ({ setView,setUserEmail }) => {
         >
           {isSubmitting ? 'Sending OTP...' : 'Create Account'}
         </button>
+
+        <button
+          onClick={() => setView('login')}
+          className="mt-3 w-full py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+          Already have an account? Login now
+        </button>
       </form>
     </div>
   );
