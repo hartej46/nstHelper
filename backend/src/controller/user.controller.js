@@ -25,7 +25,7 @@ const changePassword = async (_id, password) => {
     const user = await User.findById(_id);
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
-    if (!isPasswordCorrect) return res.status(400).json({message: "Please enter correct password"});
+    if (!isPasswordCorrect) throw new Error("Please enter correct password");
 
     user.password = password;
     await user.save()
@@ -92,9 +92,7 @@ const registerUser = asyncHandler(async (req, res) => {
         return res.status(400).json({message: "All fields are required"})
     }
 
-    const existedUser = await User.findOne({
-        $or: [{ username }, { email }]
-    })
+    const existedUser = await User.findOne({ email })
 
     if(existedUser){
         if (existedUser.isVerified) {
@@ -178,7 +176,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
     const email = req.body.email?.trim().toLowerCase();
-    const password = req.body.password?.trim().toLowerCase();
+    const password = req.body.password?.trim();
 
     if (!email || !password) return res.status(400).json({message: "Please give me correct details"});
     const user = await User.findOne({email});
@@ -234,11 +232,11 @@ const forgotPassword = asyncHandler(async(req, res) => {
 
 const resetPassword = asyncHandler(async (req, res) => {
     const {oldPassword, newPassword} = req.body;
-    const accessToken = req.cookies("accessToken");
+    const accessToken = req.cookies.accessToken;
 
     if (!oldPassword || !newPassword) return res.status(400).json({message:"Give proper input"});
 
-    const decodeToken = jwt.decode(accessToken , process.env.ACCESS_TOKEN_GENERATOR);
+    const decodeToken = jwt.verify(accessToken , process.env.ACCESS_TOKEN_GENERATOR);
     const user = await User.findById(decodeToken._id);
     if (!user) return res.status(404).json({message:"No user found"});
 
@@ -271,7 +269,7 @@ const resendOtp = asyncHandler(async(req, res) => {
     user.tempOtp = otpCode;
     user.otpExpiry = otpExpiry;
     await user.save();
-    const isEmailSent = sendEmail(user.email, otpCode);
+    const isEmailSent = await sendEmail(user.email, otpCode);
 
     if (!isEmailSent) return res.status(500).json({message:"Something went wrong internally"});
     user.otpCount++;
