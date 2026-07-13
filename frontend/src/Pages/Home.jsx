@@ -15,7 +15,7 @@ function Home() {
 
   if (isLoggedin) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-sky-50 px-4">
+      <div className="w-full h-full flex items-center justify-center bg-white px-4">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-sky-100 shadow-sm text-center">
           <h1 className="text-xl font-bold text-slate-800 leading-relaxed">
             Agyaa ladleeeee, assignment karne , aur kabhi meri yaad nahi aati tuze
