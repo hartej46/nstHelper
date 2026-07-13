@@ -34,8 +34,8 @@ function App() {
           
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path='/question' element={<QuestionPage />}/>
           </Route>
-          <Route path='/question' element={<QuestionPage />}/>
           <Route path="/playground/code/:id" element={<Playground />} />
             
 
