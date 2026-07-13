@@ -89,7 +89,7 @@ const registerUser = asyncHandler(async (req, res) => {
     if (
         [email, username, password].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(400, "All fields are required")
+        return res.status(400).json({message: "All fields are required"})
     }
 
     const existedUser = await User.findOne({
@@ -148,7 +148,7 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         role,
         password,
-        otpCode,
+        tempOtp: otpCode,
         otpExpiry,
         
     });
@@ -185,7 +185,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!user) return res.status(404).json({message: "No user found"});
 
     const isPasswordCorrect = await user.isPasswordCorrect(password);
-    if (!isPasswordCorrect) return res.status(403).status({message: "Icorrect password"});
+    if (!isPasswordCorrect) return res.status(403).json({message: "Icorrect password"});
 
     const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id);
     return  res.cookie("accessToken", accessToken, options)
