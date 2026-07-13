@@ -17,7 +17,7 @@ function Footer() {
             <h4 className=' border-b-2 border-b-gray-500 pb-0.5 '>
                 Legal
             </h4>
-            <ul className=' decoration-0 list-none'>
+            <ul className='mt-3 decoration-0 list-none'>
               <li className="mb-4">
                 <Link
                   className=" text-base font-medium text-gray-900 hover:text-gray-700"
@@ -44,16 +44,6 @@ function Footer() {
                   Linkedin 
                 </Link>
               </li>
-
-              <li className="mb-4">
-                <Link
-                  className=" text-base font-medium text-gray-900 hover:text-gray-700"
-                  to='https://www.linkedin.com/hartej46'
-                >
-                  Linkedin 
-                </Link>
-              </li>
-
             </ul>
  
         </div>
