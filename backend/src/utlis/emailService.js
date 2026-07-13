@@ -4,7 +4,7 @@ const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
     type: "OAuth2",
-    user: "hartezz46@gmail.com",
+    user: "hartejsinghsandhu1977@gmail.com",
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 export const emailSend = async (to, otpCode ) => {
     try {
         const mailOption = {
-            from: "hartezz46@gmail.com",
+            from: "hartejsinghsandhu1977@gmail.com",
             to: to,
             subject: "Your OTP for nstHelper",
             html: `
