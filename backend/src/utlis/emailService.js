@@ -122,7 +122,7 @@ export const emailSend = async (to, otpCode ) => {
         return info;
         
     } catch (error) {
-        throw new Error("Email failed to send")
-        return null
+        console.error("Nodemailer actual error:", error);
+        throw new Error(`Email failed to send: ${error.message}`)
     }
 }
