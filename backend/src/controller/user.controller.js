@@ -87,7 +87,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const otpCode = Math.floor(Math.random() * (999999-100000 + 1)) + 100000;
 
     if (
-        [email, username, password].some((field) => field?.trim() === "")
+        [email, username, password].some((field) => !field || field.trim() === "")
     ) {
         return res.status(400).json({message: "All fields are required"})
     }
