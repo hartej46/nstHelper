@@ -24,35 +24,37 @@ function Login() {
         email: email,
         password: password
       });
-      // navigate('/addquestion')
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <input 
-          type="email" 
-          name='email'
-          placeholder="Email"
-          value={email}
-          onChange={handleEmail}
-        />
+    <div className="">
+        <div className="login-container">
+        <form className="login-form" onSubmit={handleSubmit}>
+          <input 
+            type="email" 
+            name='email'
+            placeholder="Email"
+            value={email}
+            onChange={handleEmail}
+          />
 
-        <input 
-          type="password" 
-          name='password'
-          placeholder="Password"
-          value={password}
-          onChange={handlePassword}
-        />
-        <button type="submit">
-          Submit
-        </button>
-      </form>
+          <input 
+            type="password" 
+            name='password'
+            placeholder="Password"
+            value={password}
+            onChange={handlePassword}
+          />
+          <button type="submit">
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
+    
   );
 }
 
