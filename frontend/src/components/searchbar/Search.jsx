@@ -22,6 +22,7 @@ function Search({ onDebounce }) {
                 onChange={inputFunction} 
                 value={input}
                 className="border p-1 rounded"
+                placeholder='Question'
             />
         </div>
     );
