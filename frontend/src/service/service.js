@@ -21,7 +21,6 @@ export const logIn = async (userData) => {
 export const logOut = async () => {
     try {
         const response = await apiClient.post('/user/logout');
-        console.log(response)
         return response;
     } catch (error) {
         throw error.response?.data?.message || "Something went wrong during logout"
