@@ -7,7 +7,7 @@ function Footer() {
     <section className=' relative flex justify-between overflow-hidden border-t-2 border-t-black '>
         <div className=' ml-3 mr-2 mt-4 mb-2.5 '>
              <Link to="/" target="_blank" rel="noopener noreferrer">
-                <Logo />
+                <Logo size='64px'/>
              </Link>
              <p className=' text-gray-700'> 
                 Copyright © 2026 Parady <br/> Technologies Pvt. Ltd. All rights reserved.
