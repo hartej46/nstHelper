@@ -39,3 +39,38 @@ const addMCQ = asyncHandler(async(req, res) => {
         });
     }
 })
+
+const deleteMCQ = asyncHandler(async(req, res) => {
+    const { inputId } = req.body;
+    
+    if (!inputId || String(inputId).trim() === "") {
+        return res.status(422).json({
+            success: false,
+            message: "Please provide a valid input"
+        });
+    }
+
+    const id = inputId.trim();
+
+    try {
+        const deletedDoc = await MCQ.findByIdAndDelete(id);
+
+        if (!deletedDoc) {
+            return res.status(404).json({
+                success: false,
+                message: "MCQ not found. It might have already been deleted."
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Successfully deleted"
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false,
+            error: error.message
+        });
+    }
+});
