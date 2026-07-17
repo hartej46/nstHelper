@@ -74,3 +74,67 @@ const deleteMCQ = asyncHandler(async(req, res) => {
         });
     }
 });
+
+const updateMCQ = asyncHandler(async(req, res) => {
+    const { inputId, inputQuestionText, inputExplanation, inputOptions, inputCorrectOptions } = req.body;
+    
+    if (!inputId || String(inputId).trim() === "") {
+        return res.status(422).json({
+            success: false,
+            message: "Please provide a valid input"
+        });
+    }
+
+    const id = inputId.trim();
+
+    const updateFields = {};
+
+    if (inputQuestionText !== undefined) {
+        updateFields.questionText = typeof inputQuestionText === 'string' ? inputQuestionText.trim() : "";
+    }
+    if (inputExplanation !== undefined) {
+        updateFields.explanation = typeof inputExplanation === 'string' ? inputExplanation.trim() : "";
+    }
+    if (inputCorrectOptions !== undefined) {
+        updateFields.correctOptions = typeof inputCorrectOptions === 'string' ? inputCorrectOptions.trim() : "";
+    }
+    if (inputOptions !== undefined) {
+        updateFields.options = Array.isArray(inputOptions) 
+            ? inputOptions.map(opt => typeof opt === 'string' ? opt.trim() : opt) 
+            : [];
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+        return res.status(400).json({
+            success: false,
+            message: "No fields provided to update"
+        });
+    }
+
+    try {
+        const updatedDoc = await MCQ.findByIdAndUpdate(
+            id,
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedDoc) {
+            return res.status(404).json({
+                success: false,
+                message: "MCQ not found."
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Successfully updated",
+            data: updatedDoc
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Something went wrong",
+            success: false,
+            error: error.message
+        });
+    }
+});
