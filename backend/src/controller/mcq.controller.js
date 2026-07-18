@@ -138,3 +138,54 @@ const updateMCQ = asyncHandler(async(req, res) => {
         });
     }
 });
+
+const showListOfMcq = asyncHandler(async(req, res) => {
+    try {
+        const mcqs = await MCQ.find({});
+
+        return res.status(200).json({
+            success: true,
+            message: "List of all MCQs retrieved successfully",
+            count: mcqs.length,
+            data: mcqs
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message
+        });
+    }
+});
+
+const searchMcqByText = asyncHandler(async(req, res) => {
+    const { queryText } = req.query;
+
+    if (!queryText || String(queryText).trim() === "") {
+        return res.status(422).json({
+            success: false,
+            message: "Please provide a valid search query"
+        });
+    }
+
+    const searchPattern = String(queryText).trim();
+
+    try {
+        const mcqs = await MCQ.find({
+            questionText: { $regex: searchPattern, $options: "i" }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Search completed successfully",
+            count: mcqs.length,
+            data: mcqs
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message
+        });
+    }
+});
