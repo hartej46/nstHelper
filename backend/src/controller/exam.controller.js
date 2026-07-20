@@ -40,3 +40,44 @@ const createExam = asyncHandler(async (req, res) => {
         });
     }
 });
+
+const getExamById = asyncHandler(async (req, res) => {
+    const { examId } = req.params;
+
+    if (!examId || String(examId).trim() === "") {
+        return res.status(422).json({
+            success: false,
+            message: "Please provide a valid exam ID"
+        });
+    }
+
+    try {
+        const exam = await Exam.findById(examId.trim())
+            .populate("codingQuestion")
+            .populate("mcqQuestion");
+
+        if (!exam) {
+            return res.status(404).json({
+                success: false,
+                message: "Exam not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Exam fetched successfully",
+            data: exam
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message
+        });
+    }
+});
+
+export {
+    createExam,
+    getExamById
+};
