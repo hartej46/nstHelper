@@ -2,7 +2,7 @@ import { useState } from "react"
 import { addquestion } from '../service/service'
 import './Input.css';
 
-function Input() {
+function InputCodingQuestion() {
     const [title, setTitle] = useState('');
     const [language, setLanguage] = useState('');
     const [code, setCode] = useState('');
@@ -109,4 +109,4 @@ function Input() {
   )
 }
 
-export default Input
+export default InputCodingQuestion

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Home } from 'lucide-react'
 
 function sidebarMain() {
-    const availableSection = ["Exam", "MCQ", "Coding question"]
+    const availableSection = ["Exam", "MCQ", "Coding-question"]
     
     return (
         <div>
@@ -17,7 +17,7 @@ function sidebarMain() {
                     return (
                         <Link
                             className='sections'
-                            to = {`/${section}`}
+                            to = {`/${section.toLocaleLowerCase()}`}
                         >
                             {section}
                         </Link>
