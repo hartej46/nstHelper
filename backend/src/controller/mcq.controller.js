@@ -189,3 +189,11 @@ const searchMcqByText = asyncHandler(async(req, res) => {
         });
     }
 });
+
+export {
+    addMCQ,
+    deleteMCQ,
+    updateMCQ,
+    showListOfMcq,
+    searchMcqByText
+}
