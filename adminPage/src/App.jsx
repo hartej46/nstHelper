@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser } from './store/authSlice';
 import Login from './components/Login';
-import Input from './components/Input';
+import InputCodingQuestion from './components/InputCodingQuestion';
 
 function App() {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ function App() {
           element={isLoggedin ? <Navigate to="/" replace /> : <Login />} 
         />
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Input />} />
+          <Route path="/coding-question" element={<InputCodingQuestion />} />
         </Route>
         <Route path="*" element={<Navigate to={isLoggedin ? "/" : "/login"} replace />} />
       </Routes>
