@@ -1,36 +1,61 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { ArrowLeft, Plus, Trash2, Pencil } from 'lucide-react'
+import './SidebarSection.css'
 
+const featureIcons = {
+  Add: Plus,
+  Delete: Trash2,
+  Update: Pencil,
+}
 
-function SidebarSection(sectionSelected) {
-    const options = {
-        "MCQ" : ["Add","Delete", "Update"],
-        "Exam": ["Add","Delete", "Update"],
-        "Coding": ["Add","Delete"]
-    }
+const sectionOptions = {
+  mcq: ['Add', 'Delete', 'Update'],
+  exam: ['Add', 'Delete', 'Update'],
+  'coding-question': ['Add', 'Delete'],
+}
 
-    const optionsFeatures = options[sectionSelected]
-    return (
-        <div>
-            <div className='Back' to = {'/'}>
-                <p> &lt Back </p>
-            </div>
+function SidebarSection({ sectionSelected }) {
+  const location = useLocation()
 
-            <div className='availableSections'>
-                {optionsFeatures.map((section, key) => {
-                    return (
-                        <Link
-                            className='sections'
-                            to = {`/${section}`}
-                        >
-                            {section}
-                        </Link>
-                    )
-                })}
-            </div>
-            
-        </div>
-    )
+  if (!sectionSelected) return null
+
+  const options = sectionOptions[sectionSelected] || []
+  const sectionLabel = sectionSelected
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+
+  return (
+    <aside className="sidebar-section">
+      <Link className="sidebar-back-link" to="/">
+        <ArrowLeft size={14} />
+        Back
+      </Link>
+
+      <div className="sidebar-section-title">{sectionLabel}</div>
+
+      <div className="sidebar-feature-label">Actions</div>
+
+      <div className="sidebar-features">
+        {options.map((feature) => {
+          const featurePath = `/${sectionSelected}/${feature.toLowerCase()}`
+          const isActive = location.pathname === featurePath
+
+          return (
+            <Link
+              key={feature}
+              className={`sidebar-feature-link ${isActive ? 'active' : ''}`}
+              to={featurePath}
+            >
+              <span className="feature-dot" />
+              {feature}
+            </Link>
+          )
+        })}
+      </div>
+    </aside>
+  )
 }
 
 export default SidebarSection
