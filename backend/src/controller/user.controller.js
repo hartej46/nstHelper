@@ -136,7 +136,7 @@ const registerUser = asyncHandler(async (req, res) => {
     let role = 'user'
 
     if (email === process.env.ADMIN_EMAIL) {
-       role = "admin"
+        role = "admin"
     };
 
     const otpExpiry = new Date(Date.now() + (5 * 60 * 1000)); 
@@ -187,9 +187,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const {accessToken, refreshToken} = await creatRefreshAccessToken(user._id);
     return  res.cookie("accessToken", accessToken, options)
-               .cookie("refreshToken", refreshToken, options)
-               .status(200)
-               .json({messgae: "User Logged In."})
+                .cookie("refreshToken", refreshToken, options)
+                .status(200)
+                .json({messgae: "User Logged In."})
 })
 
 const logoutUser = asyncHandler(async (req, res) => {

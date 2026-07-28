@@ -38,7 +38,7 @@ export const verifyAccessToken = asyncHandler (async (req, res,next) => {
                 return res.status(401).json({ message: "Refresh token invalid. Please login again." });
             }
         }
-      return res.status(401).json({ 
+        return res.status(401).json({ 
             success: false,
             message: error.message || "Unauthorized access. Invalid or missing token." 
         });
