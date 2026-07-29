@@ -77,6 +77,28 @@ const getExamById = asyncHandler(async (req, res) => {
     }
 });
 
+const getAllExams = asyncHandler(async (req, res) => {
+    try {
+        const exams = await Exam.find({})
+            .populate("codingQuestion")
+            .populate("mcqQuestion");
+
+        return res.status(200).json({
+            success: true,
+            message: "All exams fetched successfully",
+            count: exams.length,
+            data: exams
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong",
+            error: error.message
+        });
+    }
+});
+
+
 export {
     createExam,
     getExamById
