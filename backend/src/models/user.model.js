@@ -18,6 +18,7 @@ const UserSchema = new Schema(
             unique: true,
             lowercase: true,
             trim: true, 
+            match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         },
         role : {
             type: String,
