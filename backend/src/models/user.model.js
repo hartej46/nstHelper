@@ -7,7 +7,7 @@ const UserSchema = new Schema(
     {
         username: {
             type: String,
-            default:'Aloo ke parathe',
+            required: true,
             lowercase: true,
             trim: true, 
             index: true
@@ -16,8 +16,9 @@ const UserSchema = new Schema(
             type: String,
             required: true,
             unique: true,
-            lowecase: true,
+            lowercase: true,
             trim: true, 
+            match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         },
         role : {
             type: String,
@@ -44,7 +45,7 @@ const UserSchema = new Schema(
         },
         otpWindow: {
             type:Date,
-            default: Date.now() + (24*60*60*1000)
+            default: () => new Date(Date.now() + 24*60*60*1000)
         },
         refreshToken: {
             type: String
@@ -78,7 +79,6 @@ UserSchema.methods.generateAccessToken = function () {
             _id: this._id,
             email: this.email,
             username: this.username,
-            fullName: this.fullName
         },
         process.env.ACCESS_TOKEN_GENERATOR,
         {
@@ -93,7 +93,6 @@ UserSchema.methods.generateRefreshToken = function () {
             _id: this._id,
             email: this.email,
             username: this.username,
-            fullName: this.fullName
         },
         process.env.REFRESH_TOKEN_GENERATOR,
         {
